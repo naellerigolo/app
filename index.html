@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitFusion &mdash; Your Complete Fitness Companion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo">🏋️‍♀️</div>
+      <div>
+        <h1>FitFusion</h1>
+        <p class="tagline">Plan. Train. Recover. Repeat.</p>
+      </div>
+    </div>
+    <div class="profile-summary">
+      <div>
+        <span class="label">Athlete:</span>
+        <span id="profile-name">Guest</span>
+      </div>
+      <div>
+        <span class="label">Primary Goal:</span>
+        <span id="profile-goal">Build healthy habits</span>
+      </div>
+      <button id="edit-profile" class="btn secondary">Edit Profile</button>
+    </div>
+  </header>
+
+  <nav class="app-nav">
+    <button data-target="dashboard" class="active">Dashboard</button>
+    <button data-target="workouts">Workouts</button>
+    <button data-target="nutrition">Nutrition</button>
+    <button data-target="goals">Goals &amp; Habits</button>
+    <button data-target="analytics">Analytics</button>
+  </nav>
+
+  <main>
+    <section id="dashboard" class="view active">
+      <h2>Daily Overview</h2>
+      <div class="grid stats">
+        <article class="card">
+          <h3>Workouts This Week</h3>
+          <p class="stat" id="stat-workouts">0</p>
+          <p class="muted">Keep the streak alive!</p>
+        </article>
+        <article class="card">
+          <h3>Minutes Trained</h3>
+          <p class="stat" id="stat-minutes">0</p>
+          <p class="muted">Consistency beats intensity.</p>
+        </article>
+        <article class="card">
+          <h3>Calories Burned</h3>
+          <p class="stat" id="stat-calories">0</p>
+          <p class="muted">Based on logged workouts.</p>
+        </article>
+        <article class="card">
+          <h3>Calories Consumed</h3>
+          <p class="stat" id="stat-calories-in">0</p>
+          <p class="muted">From nutrition log.</p>
+        </article>
+      </div>
+
+      <div class="grid">
+        <article class="card wide">
+          <header class="card-header">
+            <h3>Weekly Planner</h3>
+            <button id="clear-schedule" class="btn subtle">Clear</button>
+          </header>
+          <div class="schedule" id="schedule"></div>
+        </article>
+        <article class="card">
+          <header class="card-header">
+            <h3>Focus Habits</h3>
+            <button id="add-habit" class="btn subtle">Add</button>
+          </header>
+          <ul id="habit-list" class="habit-list"></ul>
+        </article>
+        <article class="card">
+          <header class="card-header">
+            <h3>Upcoming Goals</h3>
+            <button id="quick-add-goal" class="btn subtle">Add</button>
+          </header>
+          <ul id="goal-list" class="goal-list"></ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="workouts" class="view">
+      <div class="section-header">
+        <h2>Workout Log</h2>
+        <p class="muted">Track every session to uncover patterns and celebrate progress.</p>
+      </div>
+      <form id="workout-form" class="form">
+        <div class="field">
+          <label for="workout-date">Date</label>
+          <input type="date" id="workout-date" name="workout-date" required />
+        </div>
+        <div class="field">
+          <label for="workout-type">Session</label>
+          <input type="text" id="workout-type" name="workout-type" placeholder="Strength, HIIT, Yoga..." required />
+        </div>
+        <div class="field">
+          <label for="workout-duration">Duration (minutes)</label>
+          <input type="number" id="workout-duration" name="workout-duration" min="5" required />
+        </div>
+        <div class="field">
+          <label for="workout-calories">Calories Burned</label>
+          <input type="number" id="workout-calories" name="workout-calories" min="0" required />
+        </div>
+        <div class="field">
+          <label for="workout-intensity">Intensity</label>
+          <select id="workout-intensity" name="workout-intensity">
+            <option value="Low">Low</option>
+            <option value="Moderate" selected>Moderate</option>
+            <option value="High">High</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="workout-notes">Notes</label>
+          <textarea id="workout-notes" name="workout-notes" rows="2" placeholder="Key sets, weights, feelings..."></textarea>
+        </div>
+        <button class="btn primary">Add Workout</button>
+      </form>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Session</th>
+              <th>Duration</th>
+              <th>Calories</th>
+              <th>Intensity</th>
+              <th>Notes</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="workout-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="nutrition" class="view">
+      <div class="section-header">
+        <h2>Nutrition Log</h2>
+        <p class="muted">Dial in your fueling strategy with daily nutrition tracking.</p>
+      </div>
+      <form id="nutrition-form" class="form">
+        <div class="field">
+          <label for="meal-date">Date</label>
+          <input type="date" id="meal-date" name="meal-date" required />
+        </div>
+        <div class="field">
+          <label for="meal-type">Meal</label>
+          <input type="text" id="meal-type" name="meal-type" placeholder="Breakfast, Snack..." required />
+        </div>
+        <div class="field">
+          <label for="meal-calories">Calories</label>
+          <input type="number" id="meal-calories" name="meal-calories" min="0" required />
+        </div>
+        <div class="field">
+          <label for="meal-protein">Protein (g)</label>
+          <input type="number" id="meal-protein" name="meal-protein" min="0" required />
+        </div>
+        <div class="field">
+          <label for="meal-carbs">Carbs (g)</label>
+          <input type="number" id="meal-carbs" name="meal-carbs" min="0" required />
+        </div>
+        <div class="field">
+          <label for="meal-fats">Fats (g)</label>
+          <input type="number" id="meal-fats" name="meal-fats" min="0" required />
+        </div>
+        <button class="btn primary">Add Meal</button>
+      </form>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Meal</th>
+              <th>Calories</th>
+              <th>Protein</th>
+              <th>Carbs</th>
+              <th>Fats</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="nutrition-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="goals" class="view">
+      <div class="section-header">
+        <h2>Goals &amp; Habit Builder</h2>
+        <p class="muted">Set, track, and celebrate sustainable wins.</p>
+      </div>
+      <form id="goal-form" class="form">
+        <div class="field">
+          <label for="goal-title">Goal</label>
+          <input type="text" id="goal-title" name="goal-title" placeholder="Run a 5K, master pull-ups..." required />
+        </div>
+        <div class="field">
+          <label for="goal-category">Category</label>
+          <select id="goal-category" name="goal-category">
+            <option value="Performance">Performance</option>
+            <option value="Nutrition">Nutrition</option>
+            <option value="Lifestyle">Lifestyle</option>
+            <option value="Mindset">Mindset</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="goal-due">Target Date</label>
+          <input type="date" id="goal-due" name="goal-due" />
+        </div>
+        <div class="field">
+          <label for="goal-progress">Progress (%)</label>
+          <input type="number" id="goal-progress" name="goal-progress" min="0" max="100" value="0" />
+        </div>
+        <div class="field">
+          <label for="goal-notes">Action Plan</label>
+          <textarea id="goal-notes" name="goal-notes" rows="2" placeholder="Describe the plan"></textarea>
+        </div>
+        <button class="btn primary">Save Goal</button>
+      </form>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Goal</th>
+              <th>Category</th>
+              <th>Due</th>
+              <th>Progress</th>
+              <th>Plan</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="goal-table"></tbody>
+        </table>
+      </div>
+
+      <section class="card reflections">
+        <h3>Weekly Reflection</h3>
+        <textarea id="reflection" rows="4" placeholder="How did your training feel this week? What will you focus on next?"></textarea>
+        <button id="save-reflection" class="btn secondary">Save Reflection</button>
+        <p id="reflection-status" class="muted"></p>
+      </section>
+    </section>
+
+    <section id="analytics" class="view">
+      <div class="section-header">
+        <h2>Performance Analytics</h2>
+        <p class="muted">Visualize your long-term progress across training and body metrics.</p>
+      </div>
+
+      <section class="grid">
+        <article class="card wide">
+          <header class="card-header">
+            <h3>Body Metrics</h3>
+            <button id="add-metric" class="btn subtle">Add Data</button>
+          </header>
+          <canvas id="metrics-chart" height="160"></canvas>
+        </article>
+        <article class="card">
+          <h3>Macro Breakdown</h3>
+          <canvas id="macro-chart" height="160"></canvas>
+        </article>
+        <article class="card">
+          <h3>Training Split</h3>
+          <canvas id="training-chart" height="160"></canvas>
+        </article>
+      </section>
+
+      <section class="card">
+        <h3>Insights</h3>
+        <ul id="insights" class="insights"></ul>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="profile-dialog" class="modal">
+    <form method="dialog" class="modal-content" id="profile-form">
+      <h3>Edit Profile</h3>
+      <div class="field">
+        <label for="profile-name-input">Name</label>
+        <input id="profile-name-input" name="profile-name-input" type="text" placeholder="Your name" required />
+      </div>
+      <div class="field">
+        <label for="profile-goal-input">Primary Goal</label>
+        <input id="profile-goal-input" name="profile-goal-input" type="text" placeholder="E.g. Improve endurance" required />
+      </div>
+      <div class="field">
+        <label for="profile-weight-input">Current Weight (kg)</label>
+        <input id="profile-weight-input" name="profile-weight-input" type="number" min="0" step="0.1" />
+      </div>
+      <menu class="modal-actions">
+        <button value="cancel" class="btn subtle">Cancel</button>
+        <button value="default" class="btn primary">Save</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="habit-dialog" class="modal">
+    <form method="dialog" class="modal-content" id="habit-form">
+      <h3>New Habit</h3>
+      <div class="field">
+        <label for="habit-name">Habit</label>
+        <input id="habit-name" name="habit-name" type="text" required />
+      </div>
+      <div class="field">
+        <label for="habit-frequency">Frequency</label>
+        <select id="habit-frequency" name="habit-frequency">
+          <option value="Daily">Daily</option>
+          <option value="Weekly">Weekly</option>
+          <option value="Custom">Custom</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="habit-notes">Notes</label>
+        <textarea id="habit-notes" name="habit-notes" rows="2"></textarea>
+      </div>
+      <menu class="modal-actions">
+        <button value="cancel" class="btn subtle">Cancel</button>
+        <button value="default" class="btn primary">Save</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <dialog id="metric-dialog" class="modal">
+    <form method="dialog" class="modal-content" id="metric-form">
+      <h3>Add Body Metric</h3>
+      <div class="field">
+        <label for="metric-date">Date</label>
+        <input id="metric-date" name="metric-date" type="date" required />
+      </div>
+      <div class="field">
+        <label for="metric-weight">Weight (kg)</label>
+        <input id="metric-weight" name="metric-weight" type="number" min="0" step="0.1" required />
+      </div>
+      <div class="field">
+        <label for="metric-bodyfat">Body Fat (%)</label>
+        <input id="metric-bodyfat" name="metric-bodyfat" type="number" min="0" max="75" step="0.1" />
+      </div>
+      <div class="field">
+        <label for="metric-muscle">Muscle Mass (kg)</label>
+        <input id="metric-muscle" name="metric-muscle" type="number" min="0" step="0.1" />
+      </div>
+      <menu class="modal-actions">
+        <button value="cancel" class="btn subtle">Cancel</button>
+        <button value="default" class="btn primary">Save</button>
+      </menu>
+    </form>
+  </dialog>
+</body>
+</html>
