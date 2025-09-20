@@ -20,6 +20,18 @@ FitFusion is a self-contained progressive web dashboard that helps athletes and 
 
 No build process is required; the site is pure HTML, CSS, and JavaScript.
 
+## Testing
+
+Because FitFusion is a static client-side application, validation is primarily manual:
+
+1. Open `index.html` directly in your browser.
+2. Confirm that the dashboard summary tiles populate with the seeded demo data.
+3. Use the **Log Workout**, **Log Meal**, **Add Goal**, and **Add Habit** buttons to open each modal and submit a new entry. Verify the new entries appear in their respective tables and that the dashboard totals update.
+4. Switch to the **Analytics** section to ensure charts render and reflect the latest data. If charts do not render, check the browser console for JavaScript errors.
+5. Refresh the page to confirm all added data persists via `localStorage`.
+
+Automated tests are not included with this static project; if desired you can add end-to-end coverage with a tool such as Playwright or Cypress.
+
 ## Tech stack
 
 - HTML5 & semantic layout
